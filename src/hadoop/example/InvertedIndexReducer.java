@@ -1,5 +1,6 @@
 package hadoop.example;
 
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -11,11 +12,13 @@ import java.util.Map;
 /**
  * Created by Vevo on 2017/4/15.
  */
-public class InvertedIndexReducer extends Reducer<Text,Text,Text,Text> {
+public class InvertedIndexReducer extends Reducer<Text,Text,DoubleWritable,Text> {
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         Map<String,Integer> map = new HashMap<String,Integer>();
         Iterator<Text> it = values.iterator();
+
+        //item[0]用于保存词语，itemp[1]用于保存频数（Map传递过来的一般是1）
         String[] item;
         if(it.hasNext()){
             item = it.next().toString().split(":");
@@ -30,9 +33,10 @@ public class InvertedIndexReducer extends Reducer<Text,Text,Text,Text> {
             }
         }
 
+        //计算词语平均出现次数
         Iterator<Integer> valueIterator = map.values().iterator();
         long count = 0L;
-        double average = 0;
+        double average = 0L;
         while(valueIterator.hasNext()){
             count += valueIterator.next();
         }
@@ -43,13 +47,13 @@ public class InvertedIndexReducer extends Reducer<Text,Text,Text,Text> {
         Map.Entry<String,Integer> entry;
         if(entryIterator.hasNext()){
             entry = entryIterator.next();
-            docIndex.append(entry.getKey()+":"+entry.getValue());
+            docIndex.append(entry.getKey()).append(":").append(entry.getValue());
         }
         while(entryIterator.hasNext()){
             docIndex.append(";");
             entry = entryIterator.next();
-            docIndex.append(entry.getKey()+":"+entry.getValue());
+            docIndex.append(entry.getKey()).append(":").append(entry.getValue());
         }
-        context.write(key,new Text(average+","+docIndex.toString()));
+        context.write(new DoubleWritable(average),new Text(key.toString() + "\t" + average+","+docIndex.toString()));
     }
 }

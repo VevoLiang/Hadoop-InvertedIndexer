@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 /**
  * Created by Vevo on 2017/4/15.
+ * 用于实现Map输出数据<<word,doc>,count>到<word,doc_count>的数据整合
  */
 public class InvertedIndexCombiner extends Reducer<Text,IntWritable,Text,Text> {
     @Override

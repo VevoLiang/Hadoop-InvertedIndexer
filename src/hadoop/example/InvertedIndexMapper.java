@@ -15,6 +15,7 @@ public class InvertedIndexMapper extends Mapper<Object,Text,Text,Text> {
     @Override
     protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
         FileSplit fileSplit = (FileSplit) context.getInputSplit();
+        //仅截取文件（小说）的名字，去掉扩展格式符
         String docName = (fileSplit.getPath().getName().split("\\."))[0];
         String[] words = value.toString().split("\\s");
         for(int i=0;i<words.length;i++){
