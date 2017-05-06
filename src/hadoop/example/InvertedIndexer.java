@@ -64,6 +64,7 @@ public class InvertedIndexer {
                 InputSampler.writePartitionFile(sortJob, sampler);
 
                 System.exit(sortJob.waitForCompletion(true)?0:1);
+                //TODO
             }
             System.exit(1);
         } catch (IOException e) {
